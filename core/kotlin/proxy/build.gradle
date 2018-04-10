@@ -1,0 +1,71 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.8
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+    maven { url "https://dl.bintray.com/kotlin/ktor" }
+    maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "io.ktor:ktor-server-netty:$ktor_version"
+    compile "ch.qos.logback:logback-classic:1.2.1"
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'com.squareup.moshi:moshi:1.5.0'
+    compile 'com.squareup.moshi:moshi-kotlin:1.5.0'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+buildscript {
+    ext {
+        kotlin_version = '1.2.0'
+        moshiVersion = "1.5.0"
+        ktor_version = "0.9.0"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+jar {
+    manifest {
+        attributes('Main-Class': 'openwhisk.kotlin.action.ProxyKt')
+    }
+}
+
+task oneJar(type: Jar) {
+    manifest.from jar.manifest
+    classifier = 'all'
+    from {
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+}

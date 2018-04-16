@@ -1,0 +1,2 @@
+ext.dockerImageName = 'action-kotlin'
+apply from: '../../gradle/docker.gradle'

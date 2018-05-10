@@ -1,6 +1,6 @@
 include 'tests'
 
-include 'core:kotlin'
+include 'kotlin'
 
 rootProject.name = 'runtime-kotlin'
 

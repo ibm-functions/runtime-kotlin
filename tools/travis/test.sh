@@ -10,8 +10,5 @@ WHISKDIR="$ROOTDIR/../openwhisk"
 export OPENWHISK_HOME=$WHISKDIR
 
 cd ${ROOTDIR}
-if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-  TERM=dumb ./gradlew :tests:test
-else
-  TERM=dumb ./gradlew :tests:testWithoutCredentials
-fi
+TERM=dumb ./gradlew :tests:test
+

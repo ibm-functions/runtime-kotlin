@@ -17,10 +17,6 @@ tasks.withType(Test) {
     outputs.upToDateWhen { false } // force tests to run every time
 }
 
-task testWithoutCredentials(type: Test) {
-    exclude '**/*Credentials*'
-}
-
 dependencies {
     compile "org.scala-lang:scala-library:${gradle.scala.version}"
     compile "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.2.0"

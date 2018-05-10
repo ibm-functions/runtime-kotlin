@@ -1,9 +1,10 @@
-# IBM Cloud Functions runtime for Kotlin 
-WARNING: Work in Progress (WIP) not ready for production
+# IBM Cloud Functions (OpenWhisk) runtime for Kotlin 
+
+:warning:  Work in Progress (WIP) not ready for production :warning:
 
 [![Build Status](https://travis-ci.org/ibm-functions/runtime-kotlin.svg?branch=master)](https://travis-ci.org/ibm-functions/runtime-kotlin)
 
-The runtime provides Kotlin running on Java 8u131 b11.
+The runtime provides Kotlin running on Java adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u162-b12_openj9-0.8.0
 
 ## Hello World Kotlin Action
 
@@ -82,7 +83,7 @@ Build and Push image:
 
 ```sh
 docker login 
-./gradlew core:kotlin:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
+./gradlew kotlin:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
 ```
 
 Deploy OpenWhisk using ansible environment that adds the new kind `kotlin`
@@ -118,14 +119,22 @@ wsk action update myAction myAction.jar --docker $user_prefix/action-kotlin
 The `$user_prefix` is usually your dockerhub user id.
 
 ### Testing
+Install dependencies from the root directory on $OPENWHISK_HOME repository
+```
+./gradlew install
+```
 
-
-To run all tests: `./gradlew tests:test` this include tests depending on credentials
-
-To run all tests except those which do not rely on credentials `./gradlew tests:testWithoutCredentials`
-
-To run a single test-class: `./gradlew tests:test --tests <SomeGradleTestFilter>`
-
+Using gradle to run all tests
+```
+./gradlew :tests:test
+```
+Using gradle to run some tests
+```
+./gradlew :tests:test --tests *ActionContainerTests*
+```
+Using IntelliJ:
+- Import project as gradle project.
+- Make sure working directory is root of the project/repo
 
 # License
 [Apache 2.0](LICENSE.txt)

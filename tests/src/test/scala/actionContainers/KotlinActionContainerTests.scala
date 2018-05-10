@@ -35,7 +35,7 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
 
   // Helpers specific to java actions
   def withKotlinContainer(code: ActionContainer => Unit, env: Map[String, String] = Map.empty) =
-    withContainer("action-kotlin-v1", env)(code)
+    withContainer("action-kotlin", env)(code)
 
   override def initPayload(mainClass: String, jar64: String) =
     JsObject(

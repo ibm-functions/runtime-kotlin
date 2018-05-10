@@ -17,7 +17,7 @@ deploy:
     tags: true
     all_branches: true
 - provider: script
-  script: "./tools/travis/publish.sh ibmfunctions kotlin master"
+  script: "./tools/travis/publish.sh ibmfunctions kotlin latest"
   on:
     branch: master
 env:

@@ -6,19 +6,19 @@ scala:
 services:
 - docker
 before_install:
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_a0b9052d7bd5_key -iv $encrypted_a0b9052d7bd5_iv -in tests/credentials.json.enc -out tests/credentials.json -d; fi'
 - "./tools/travis/setup.sh"
 install: true
 script:
-- "./tools/travis/build.sh"
-- "./tools/travis/deploy.sh"
-- "./tools/travis/test.sh"
+- "./tools/travis/build.sh && ./tools/travis/deploy.sh && ./tools/travis/test.sh"
 deploy:
 - provider: script
-  script: "./tools/travis/publish.sh openwhisk ${TRAVIS_TAG%@*} ${TRAVIS_TAG##*@}"
+  script: "./tools/travis/publish.sh ibmfunctions ${TRAVIS_TAG%@*} ${TRAVIS_TAG##*@}"
   on:
     tags: true
     all_branches: true
 env:
   global:
-  - secure: D4kU9O6bs63Myb4jaEgw1O2Kuy6aTAUKEX1qZ0eYMDouLnPOPnZaFWmpISKTrJyz7hJH7yY8Cj7xl5qwsLB6JZZMtqT6yj5J/jkUJjyLKdQH81PrYy22rH99xS2t5A1dsC0A/Bf39R/qNc5tx1wCMVDF4O2rFsUtn+8vE+rn0nXsiPeWhhZagk/Hrq8YbwzDJHOGHfWe1nZIcU8MORzTriX7J2VAF0AcirPandMxff4FgzNLk432DN2GvgZIlNtZGT1DWLtJV/Sp3unD9abXr5xqNDIW+fHrMq8j/JdHC6+PFtZRFrl0Vr6X8c61PkB/ELGF2MyzNgBTnEaJixl1pianr91WK4y0oLUwpSJCz4yoQGVimAAtqMgNXjEyFMcpLClzS5TjMXKaUfi9mBn9GMCwLi3VAuVtMtH2IRW03PxIPyxkbj1j8Nrd0jh408MuMpuzyECgb+E5ffbd+0YD5XUNlTkYLFi4sEh2xpzvjGrNbrTe99zFrHt3e+dbmoahmaCyDRsxD2CDI8b++HyN78z/jO9A7kFc2TAZbWa6Xygkj1nEpnR1y4TB6eqdDo7Y6W20dLjeSSF8rACw3bM3lJh+K4/nv4Nlo6pfblhvs7T53ftst+tHpxJoQy/gDC0TcuyBThrHTeI1j7k4HkQyN+NqezBdFN2ElufjQ74ds2c=
-  - secure: KzgDAV8O0ya6JBqSs4J4A7A+2n9Mgs5kRzhwwPdUg7ExuG2xXwWw1gafNPZwagfVOQfdqLzfF4tY8PPbTfloqEomFmYI/9PUHU8nMiMQkhEKkU3Od6HqqV9/WCf9vBrmqZHTPQNRVUvsbcOiYG1xtQr4JPHySJnk9VbgumRCT+f0xWK5mGK3CQqIo43F0TScjMONED/h7yueT+zFIJIfTiOXgtckbZdi7hErrVubbkduyzGSMek1Pfzy+m7Ek6jIaS4iD6duSRfxO9GVDTMee13cD3HuIWWfkZMkNiMlXBLmOPhb67lt/dgryxZ9zKxCzJFDW3Fx8uohoFu+sg8ZcyCeeDqMUfeML8rKAdNk72e2W9Vzedx6lxoTIhLYA3KLj7kL5wTxEq9QnSI/dMPqJUG/IA7Cr5fnJWRAlJ3IroQqBH8vNZ9zuoh/Ap4G2kXL1m4JECPhBlsX8i9RgDrFrab4My2IOHBw+ZA+cJ4h5njQUkuhMtlAhJ26jwQgYhn/sSMLgb4h5IX2iiRprsrg912vFg0ZrgHu1joIH/1XEGdArkQ7O9za4mowEmOuATux0drXTRKGe6z+/xaW35K8tQ52ToJRMN+GZBKlZoNIZd/rQ/y1Ikb6PD5Gfjk0WBnxYT5jV+ted7zCq3LskpWyvXtVTKoOqPOC/cDcY5JBPK8=
+  - secure: dndDlFixUN9sua36GlNYq43GucaPmQxQaGtqnRAToKDihTwXqDLksWw8OoXnBqnWMJu/X8j2cx1EAiFmDRO5RdOlILoOx2TqsIEN4Xeu6egLTqr9gri494AuhGC09MLOfVVXW5RsJY2I2D3PoehTNC4u9HxXYJMZp/0Y3kBok+ADp5O3TzC0e5DLFIsQcRxWo81tJ6qraI4xILej8LYPubLT1Zh9hmvWXtXl666gNTrV9vDAROtDU4fAfkv44tv5n5MJNUZWzyYhPpUcmnSetlBVxyX+SrTqvabCYmY0Vg7EvSc6a7fA5YoLpockA2K2VA9+q1Pzns3nDOdVUbt/rRiA5W6+Q5/JH5WkqnjZlGSoez0KXATA4CoSwBXCxuoqwfXlZyEnE71rZv/Kspeeb03I3GQbVihRN0NoAKJwK7AVJMPo4CLLz8WXBWd4Lg4BtTOasZi7gx4jitQ3akfNobxfA0YEb+jNQtRGFuP7KKwfyiz7xuuQoh6X+Q6mOgI/jHBqbilMDYaHLuVc7Avu6BL2UeKw82T1iru74qk2evebRxBaAvp4S0icPYcbBu6gMvNfwU1gj814o61tCn8eBKRR/fKWYSf6TwjutnZ+JRedNYUQA5JSZyQOzJQvQIEZoh8fTACnBJ/QJ6R2DtTGsI17A/ZLLHwM49uP4lVrKm4=
+  - secure: lTMQ9GZ4heAK4hBC17C+Pz4e8bMOo0Elrpcoz2CdiznkhlguWZpn9+RMjk0VVjpr7nh1ubefDa+qhPg7pBH1PQJ+/vbvfhhzkhowj1DL0oraBoz16QJdIkaBZX+QFt5WMuSnOQJDSr3BPUlclqlC/f+15XDBjKPPhfQkgft7Gbz3o5XiNEV5NJNC0aGYhvvoRETBcfP3U0N40Bljr2I8EaDQH6rzyoFlKyANwaqIDj1F6plfq0Zr22GvLJfhZg6fR+IMMHAvAn9CI4CP27yBfC8ylJhIvy5hKFgZ2CzhWUoauDjZrfQgQs6WW5SzuqUeUc6dU7e6se1GzehemptsSrLznLZi+tx/clQdk0aKwgHR1cpFwGauzeFP8wnU/zG1ID4Z4G77XhIl9uhZdHzdPtm00OCyOUPlLQf9wuKh1LNA++zZvOjslWQHWmBQybMfoqNAw3lQTS3L4CFc4VoGmQhjOABm3Z9TmoTcW0nWNqziwZpC1GBvCgt/1QdQX97/BRCt3kp091g80pI+Ztday+kIhCnpkSCRkhQW+Eymd2DLRsVhSoJZ9WlAAvkxaKmbX4xvdedoWjsCzPUQWxl5/mpT9sxlCS7HrSadMLaNHMao9BZYBVDgGpj9S9wkMi0eR58A0HDSwCpk6RGQ4nbdULwwDpfWQ/xNKmgcAtVD2L4=
+

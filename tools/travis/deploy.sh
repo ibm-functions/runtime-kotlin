@@ -20,11 +20,18 @@ $ANSIBLE_CMD couchdb.yml
 $ANSIBLE_CMD initdb.yml
 $ANSIBLE_CMD wipe.yml
 $ANSIBLE_CMD openwhisk.yml -e cli_installation_mode=remote
+$ANSIBLE_CMD postdeploy.yml
 
 docker images
 docker ps
 
-cat $WHISKDIR/whisk.properties
+#update whisk.properties to add tests/credentials.json file to vcap.services.file, which is needed in tests
+VCAP_SERVICES_FILE="$(readlink -f ${ROOTDIR}/tests/credentials.json)"
+WHISKPROPS_FILE="$WHISKDIR/whisk.properties"
+sed -i 's:^[ \t]*vcap.services.file[ \t]*=\([ \t]*.*\)$:vcap.services.file='$VCAP_SERVICES_FILE':'  $WHISKPROPS_FILE
+
+cat $WHISKPROPS_FILE
+
 curl -s -k https://172.17.0.1 | jq .
 curl -s -k https://172.17.0.1/api/v1 | jq .
 

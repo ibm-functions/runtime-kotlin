@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package actionContainers
+package runtime.actionContainers
 
-import ActionContainer.withContainer
-
+import actionContainers.{ActionContainer, ActionProxyContainerTestUtils}
+import actionContainers.ActionContainer.withContainer
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -26,8 +26,7 @@ import org.scalatest.junit.JUnitRunner
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
-
-import runtime.actionContainers.ResourceHelpers.JarBuilder
+import ResourceHelpers.JarBuilder
 
 import common.WskActorSystem
 
@@ -36,14 +35,13 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
 
   // Helpers specific to java actions
   def withKotlinContainer(code: ActionContainer => Unit, env: Map[String, String] = Map.empty) =
-    withContainer("action-kotlin", env)(code)
+    withContainer("action-kotlin-v1", env)(code)
 
   override def initPayload(mainClass: String, jar64: String) =
     JsObject(
       "value" -> JsObject("name" -> JsString("dummyAction"), "main" -> JsString(mainClass), "code" -> JsString(jar64)))
 
   behavior of "Kotlin action"
-
 
   it should s"run a kotlin snippet and confirm expected environment variables" in {
     val props = Seq(
@@ -127,7 +125,6 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
     //err.trim shouldBe empty
   }
 
-
   it should "support valid actions with non 'main' names" in {
     val (out, err) = withKotlinContainer { c =>
       val jar = JarBuilder.compileToJar(
@@ -182,9 +179,10 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
 
         out shouldBe {
           val error = m match {
-            case c if c == "x" || c == "!" => "Failed to find specified class: example.HelloWhisk" + c + "Kt in provided jar file"
-            case "#bogus"                  => "Failed to find specified method: bogus in example.HelloWhiskKt"
-            case _                         => "Failed to find specified method: main in example.HelloWhiskKt"
+            case c if c == "x" || c == "!" =>
+              "Failed to find specified class: example.HelloWhisk" + c + "Kt in provided jar file"
+            case "#bogus" => "Failed to find specified method: bogus in example.HelloWhiskKt"
+            case _        => "Failed to find specified method: main in example.HelloWhiskKt"
           }
           Some(JsObject("error" -> error.toJson))
         }
@@ -236,7 +234,8 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
       Thread.sleep(500)
       val (initCode, out) = c.init(initPayload("example.Broken", brokenJar))
       initCode should not be (200)
-      out should be(Some(JsObject("error" -> JsString("Failed to find specified class: example.BrokenKt in provided jar file"))))
+      out should be(
+        Some(JsObject("error" -> JsString("Failed to find specified class: example.BrokenKt in provided jar file"))))
     }
 
     // Somewhere, the logs should contain an exception.
@@ -257,7 +256,6 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
             |     throw Exception("noooooooo")
             | }
           """.stripMargin.trim)
-
 
       val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
       initCode should be(200)
@@ -332,7 +330,6 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
     //combined.toLowerCase should include("system.exit")
   }
 
-
   it should "enforce that the user returns an object" in {
     withKotlinContainer { c =>
       val jar = JarBuilder.compileToJar(
@@ -357,8 +354,6 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
       runRes.get.fields.get("error") shouldBe defined
     }
   }
-
-
 
   val dynamicLoadingJar = JarBuilder.compileToJar(
     Seq(
@@ -452,9 +447,7 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
       val (initCode, _) = c.init(initPayload("example.HelloWhisk", jar))
       initCode should be(200)
 
-      val props = Seq(
-        "id" -> "UsersID",
-        "username" -> "UsersUsername")
+      val props = Seq("id" -> "UsersID", "username" -> "UsersUsername")
 
       val (runCode, runRes) = c.run(runPayload(props.toMap.toJson.asJsObject))
       runCode should be(200)
@@ -465,4 +458,3 @@ class KotlinActionContainerTests extends FlatSpec with Matchers with WskActorSys
     }
   }
 }
-

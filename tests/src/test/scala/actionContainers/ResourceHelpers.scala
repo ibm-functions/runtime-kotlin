@@ -72,7 +72,14 @@ object ResourceHelpers {
       val binDir: Path = Files.createTempDirectory("bin").toAbsolutePath()
       val outJar: Path = Paths.get(binDir + "/out.jar")
       val kotlinCompiler = new K2JVMCompiler()
-      val result = kotlinCompiler.exec(System.out, srcDir.toString(), "-classpath", buildClassPath(), "-no-stdlib", "-d", outJar.toAbsolutePath().toString)
+      val result = kotlinCompiler.exec(
+        System.out,
+        srcDir.toString(),
+        "-classpath",
+        buildClassPath(),
+        "-no-stdlib",
+        "-d",
+        outJar.toAbsolutePath().toString)
       System.out.println(outJar.toAbsolutePath().toString)
       val base64 = readAsBase64(outJar.toAbsolutePath())
       base64
@@ -90,7 +97,7 @@ object ResourceHelpers {
     def mkBase64Jar(source: (Seq[String], String)): String = {
       mkBase64Jar(Seq(source))
     }
-    */
+     */
 
     private def compile(sources: Seq[(Seq[String], String)]): Path = {
       require(!sources.isEmpty)
@@ -110,7 +117,7 @@ object ResourceHelpers {
 
       // Setting the options
 
-      val kotlinCompiler = new  K2JVMCompiler()
+      val kotlinCompiler = new K2JVMCompiler()
       val result = kotlinCompiler.exec(
         System.out,
         "/Users/bailey/git/main.kt",

@@ -1,116 +1,155 @@
 # IBM Cloud Functions (OpenWhisk) runtime for Kotlin 
 
-:warning:  Work in Progress (WIP) not ready for production :warning:
+:warning:  The Runtime for Kotlin is currently experimental. Feedback is welcome.  :warning:
 
 [![Build Status](https://travis-ci.org/ibm-functions/runtime-kotlin.svg?branch=master)](https://travis-ci.org/ibm-functions/runtime-kotlin)
 
-The runtime provides Kotlin running on Java adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u162-b12_openj9-0.8.0
+This runtime provides Kotlin running on the following OpenJDK/OpenJ9 image from [AdoptOpenJDK](https://adoptopenjdk.net/?variant=openjdk8-openj9):
 
-## Hello World Kotlin Action
+ *  [adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u162-b12_openj9-0.8.0](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/)
 
-The runtime for Kotlin supports two types of API for creating actions:  
-1. JSON parameter and return type, using the GSON Library.  
-2. Data Class parameter and return type.
+## Creating a Kotlin Action
 
-### JSON parameter based main.kt
-The following shows how to build a "HelloWorld" action using JSON parameters:
+The Runtime for Kotlin supports two APIs for creating actions:  
+1. JSON based.  
+The action receives parameters as a JSON object and returns a JSON object, using the [Google GSON library](https://github.com/google/gson) library.  
+2. Data Class based.  
+The action receives parameters as a user defined data Class, and returns a user defined data Class.  
 
-```kotlin
-import com.google.gson.JsonObject
+### "Hello World" using the JSON API
+The following shows how to build a "HelloWorld" action using the JSON API:
 
-fun main(args: JsonObject) : JsonObject {
-    val name = args.getAsJsonPrimitive("name").getAsString();
-    val hello = JsonObject();
-    hello.addProperty("greeting", "Hello " + name + "!");
-    return hello
-}
-```
-The action can then be compiled into a JAR file for use with the runtime for Kotlin. As the action has a dependency on the [Google GSON library](https://github.com/google/gson), it needs to be available on the classpath:
-```sh
-kotlinc -classpath ./gson-2.6.2.jar main.kt -d myAction.jar
-```
+1. Create a file called `main.kt` containing:
 
-### Data Class based main.kt
-The following shows how to build a "HelloWorld" action using JSON parameters:
+	```kotlin
+	import com.google.gson.JsonObject
+	
+	fun main(args: JsonObject) : JsonObject {
+	    val name = args.getAsJsonPrimitive("name").getAsString();
+	    val hello = JsonObject();
+	    hello.addProperty("greeting", "Hello " + name + "!");
+	    return hello
+	}
+	```
+2. Compile the action into a JAR file:
 
-```kotlin
-data class User (
-    val name: String
-)
+	```sh
+	kotlinc -classpath ./gson-2.6.2.jar main.kt -d myAction.jar
+	```
+	
+This provides the action contained in myAction.jar, ready to be deployed and run.
 
-data class Hello (
-    val greeting: String
-)
+### "Hello World" using the Data Class API
+The following shows how to build a "HelloWorld" action using the Data Class API:
 
-fun main(user: User) : Hello {
-    val hello = Hello("Hello " + user.name + "!")
-    return hello
-}
-```
-The action can then be compiled into a JAR file for use with the runtime for Kotlin as follows:
-```sh
-kotlinc hello.kt -d myAction.jar
-```
+1. Create a file called `main.kt` containing:
 
-### How to use as a docker Action
-To use as a docker action
+	```kotlin
+	data class User (
+	    val name: String
+	)
+	
+	data class Hello (
+	    val greeting: String
+	)
+	
+	fun main(user: User) : Hello {
+	    val hello = Hello("Hello " + user.name + "!")
+	    return hello
+	}
+	```
+	
+2. Compile the action into a JAR file:
+
+	```sh
+	kotlinc main.kt -d myAction.jar
+	```
+This provides the action contained in myAction.jar, ready to be deployed and run.
+
+### Deploying the Kotlin Action
+The Kotlin action can be deployed for use as a Docker action using the following, works on any deployment of Apache OpenWhisk or IBM Cloud Functions"
 
 ```sh
 bx wsk action update myAction myAction.jar --docker ibmfunctions/action-kotlin
 ```
 
-This works on any deployment of Apache OpenWhisk or IBM Cloud Functions
+This assumes that you have used the default file name of `main.kt` and the default main function name of `main`.
 
-### Future: IBM Cloud Functions (based on Apache OpenWhisk)
-To use as a Kotlin kind action:
+You can specify alternative package, file and main function names using the `--main` option to `wsk action update`. For example:  
+
+* Using a file name of `hello.kt`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "hello" --docker ibmfunctions/action-kotlin
+	```
+* Using a main function name of `action`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "#action" --docker ibmfunctions/action-kotlin
+	```
+
+* Using a file name of `hello.kt` and a main function name of `action`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "hello#action" --docker ibmfunctions/action-kotlin
+	```
+	
+* Using a package of `myfunctions` with file name of `hello.kt` and a main function name of `action`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "myfunctions.hello#action" --docker ibmfunctions/action-kotlin
+	```
+
+### Running the Kotlin Action
+The Kotlin action can be run in the same way as any other action. The following will execute the Hello World example with a parameter of `Cloud Functions`:
 
 ```sh
-bx wsk action update myAction myAction --kind kotlin
+bx wsk action invoke myAction -b -p name "Cloud Functions"
 ```
 
-Tip: Not available yet in the IBM Cloud
+This should return the following in the `response` section of the output:
 
-### Working with the local git repo 
-Prerequisite: *Export* OPENWHISK_HOME to point to your incubator/openwhisk cloned directory.
+```json
+    "response": {
+        "result": {
+            "greeting": "Hello Cloud Functions!"
+        },
+        "status": "success",
+        "success": true
+    }
+```
+
+## Future Work:
+Areas of future work for the Runtime for Kotlin include:
+
+1. Async APIs.  
+The Runtime for Kotlin currently only provides synchronous, blocking APIs, however it is well suited for asynchronous programming, and is used extensively in that way on Android.
+2. Client SDK.  
+The implementation of the data Class API makes it easy to share data type definitions with Kotlin clients. Having a client SDK that accepts data Classes when calling the action, particular for Android, would make adoption and usage much easier.
+
+
+
+## Developing for the Runtime for Kotlin 
+The following information describes how to build and deploy the Runtime for Kotlin from a local Git repository.
+
+### Building an image from the repository
+The following builds an image from the project:
 
 ```sh
 ./gradlew core:kotlin:distDocker
 ```
 
-This will produce the image `whisk/action-kotlin`
+This will produce the image `ibmfunctions/action-kotlin`
 
-Build and Push image:
+### Building and Pushing an image to Dockerhub:
+The following builds an image, and pushes it to Dockerhub for use by OpenWhisk or IBM Cloud Functions:
 
 ```sh
 docker login 
 ./gradlew kotlin:distDocker -PdockerImagePrefix=$prefix-user -PdockerRegistry=docker.io
 ```
 
-Deploy OpenWhisk using ansible environment that adds the new kind `kotlin`
-Assuming you have OpenWhisk already deploy localy and `OPENWHISK_HOME` pointing to root directory of OpenWhisk core repository.
-
-Set `ROOTDIR` to the root directory of this repository.
-
-Redeploy OpenWhisk
-
-```sh
-cd $OPENWHISK_HOME/ansible
-ANSIBLE_CMD="ansible-playbook -i ${ROOTDIR}/ansible/environments/local"
-$ANSIBLE_CMD setup.yml
-$ANSIBLE_CMD couchdb.yml
-$ANSIBLE_CMD initdb.yml
-$ANSIBLE_CMD wipe.yml
-$ANSIBLE_CMD openwhisk.yml
-```
-
-To use as docker action push to your own dockerhub account
-
-```sh
-docker tag whisk/action-kotlin $user_prefix/action-kotlin
-docker push $user_prefix/action-kotlin
-```
-
-Then create the action using your the image from dockerhub
+You can then create actions using your the image from dockerhub
 
 ```
 wsk action update myAction myAction.jar --docker $user_prefix/action-kotlin

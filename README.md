@@ -73,7 +73,32 @@ The Kotlin action can be deployed for use as a Docker action using the following
 bx wsk action update myAction myAction.jar --docker ibmfunctions/action-kotlin
 ```
 
-This assumes that you have used the default file name of `main.kt` and the default main function of `main`.
+This assumes that you have used the default file name of `main.kt` and the default main function name of `main`.
+
+You can specify alternative package, file and main function names using the `--main` option to `wsk action update`. For example:  
+
+* Using a file name of `hello.kt`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "hello" --docker ibmfunctions/action-kotlin
+	```
+* Using a main function name of `action`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "#action" --docker ibmfunctions/action-kotlin
+	```
+
+* Using a file name of `hello.kt` and a main function name of `action`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "hello#action" --docker ibmfunctions/action-kotlin
+	```
+	
+* Using a package of `myfunctions` with file name of `hello.kt` and a main function name of `action`:  
+
+	```sh
+	bx wsk action update myAction myAction.jar --main "myfunctions.hello#action" --docker ibmfunctions/action-kotlin
+	```
 
 ### Running the Kotlin Action
 The Kotlin action can be run in the same way as any other action. The following will execute the Hello World example with a parameter of `Cloud Functions`:

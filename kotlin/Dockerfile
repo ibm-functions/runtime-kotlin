@@ -14,7 +14,7 @@
 # specific language governing permissions and limitations under the License.
 #
 
-FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u162-b12_openj9-0.8.0
+FROM adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u212-b04_openj9-0.14.2
 
 RUN rm -rf /var/lib/apt/lists/* && apt-get clean && apt-get update \
 	&& apt-get install -y --no-install-recommends locales \
@@ -25,8 +25,8 @@ ENV LANG="en_US.UTF-8" \
 	LANGUAGE="en_US:en" \
 	LC_ALL="en_US.UTF-8" \
 	VERSION=8 \
-	UPDATE=162 \
-	BUILD=12
+	UPDATE=212 \
+	BUILD=04
 
 ADD proxy /kotlinAction
 

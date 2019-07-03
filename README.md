@@ -6,7 +6,7 @@
 
 This runtime provides Kotlin running on the following OpenJDK/OpenJ9 image from [AdoptOpenJDK](https://adoptopenjdk.net/?variant=openjdk8-openj9):
 
- *  [adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u162-b12_openj9-0.8.0](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/)
+ *  [adoptopenjdk/openjdk8-openj9:x86_64-ubuntu-jdk8u212-b04_openj9-0.14.2](https://hub.docker.com/r/adoptopenjdk/openjdk8-openj9/)
 
 ## Creating a Kotlin Action
 

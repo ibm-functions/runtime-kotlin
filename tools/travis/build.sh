@@ -15,12 +15,12 @@ IMAGE_PREFIX="testing"
 cd $WHISKDIR
 
 #pull down images
-docker pull openwhisk/controller
-docker tag openwhisk/controller ${IMAGE_PREFIX}/controller
-docker pull openwhisk/invoker
-docker tag openwhisk/invoker ${IMAGE_PREFIX}/invoker
-docker pull openwhisk/nodejs6action
-docker tag openwhisk/nodejs6action ${IMAGE_PREFIX}/nodejs6action
+docker pull openwhisk/controller:nightly
+docker tag openwhisk/controller:nightly ${IMAGE_PREFIX}/controller
+docker pull openwhisk/invoker:nightly
+docker tag openwhisk/invoker:nightly ${IMAGE_PREFIX}/invoker
+docker pull openwhisk/nodejs6action:nightly
+docker tag openwhisk/nodejs6action:nightly ${IMAGE_PREFIX}/nodejs6action
 
 TERM=dumb ./gradlew install
 

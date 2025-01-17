@@ -1,3 +1,12 @@
+# This repository is no longer maintained.
+IBM Cloud Functions reached end of life and this repository is no longer active.
+
+For Apache OpenWhisk visit: [https://github.com/apache/openwhisk](https://github.com/apache/openwhisk).
+
+---
+
+
+
 # IBM Cloud Functions (OpenWhisk) runtime for Kotlin 
 
 :warning:  The Runtime for Kotlin is currently experimental. Feedback is welcome.  :warning:
